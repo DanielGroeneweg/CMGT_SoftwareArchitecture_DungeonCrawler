@@ -13,8 +13,8 @@ public class GridLayoutDrawer : PropertyDrawer
         position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
         // Get child properties
-        SerializedProperty columnsProp = property.FindPropertyRelative("columns");
-        SerializedProperty rowsProp = property.FindPropertyRelative("rows");
+        SerializedProperty columnsProp = property.FindPropertyRelative("rows");
+        SerializedProperty rowsProp = property.FindPropertyRelative("columns");
 
         // Calculate rects
         float fullWidth = position.width;
@@ -24,7 +24,7 @@ public class GridLayoutDrawer : PropertyDrawer
         Rect xLabelRect = new Rect(columnsRect.xMax + 5, position.y, 10, position.height);
         Rect rowsRect = new Rect(xLabelRect.xMax + 5, position.y, fieldWidth, position.height);
 
-        // Draw fields
+        // Draw fields (columns first)
         EditorGUI.PropertyField(columnsRect, columnsProp, GUIContent.none);
         EditorGUI.LabelField(xLabelRect, "x");
         EditorGUI.PropertyField(rowsRect, rowsProp, GUIContent.none);

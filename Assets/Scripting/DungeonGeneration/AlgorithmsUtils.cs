@@ -28,35 +28,35 @@ public class AlgorithmsUtils
         }
     }
     
-    public static void FillRectangle(int[,] array, RectInt area, int value)
+    public static void FillRectIntangle(float[,] array, RectInt area, float value)
     {
-        for (int i = area.y; i < area.y + area.height; i++)
+        for (int i = (int)area.y; i < area.y + area.height; i++)
         {
-            for (int j = area.x; j < area.x + area.width; j++)
+            for (int j = (int)area.x; j < area.x + area.width; j++)
             {
                 array[i, j] = value;
             }
         }
     }
     
-    public static void FillRectangleOutline(int[,] array, RectInt area, int value) 
+    public static void FillRectIntangleOutline(float[,] array, RectInt area, float value) 
     { 
         
-        int endX = area.x + area.width - 1;
-        int endY = area.y + area.height - 1;
+        float endX = area.x + area.width - 1;
+        float endY = area.y + area.height - 1;
 
         // Draw top and bottom borders
-        for (int x = area.x; x <= endX; x++)
+        for (int x = (int)area.x; x <= endX; x++)
         {
-            array[area.y, x] = value;
-            array[endY, x] = value;
+            array[(int)area.y, x] = value;
+            array[(int)endY, x] = value;
         }
 
         // Draw left and right borders
-        for (int y = area.y + 1; y < endY; y++)
+        for (int y = (int)area.y + 1; y < endY; y++)
         {
-            array[y, area.x] = value;
-            array[y, endX] = value;
+            array[y, (int)area.x] = value;
+            array[y, (int)endX] = value;
         }
     }
 

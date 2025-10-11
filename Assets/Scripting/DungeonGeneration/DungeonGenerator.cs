@@ -1,16 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 using System;
 using NaughtyAttributes;
-using System.Runtime.CompilerServices;
-using System.Linq;
-using System.Data;
 [Serializable]
 public class GridLayout
 {
-    public int columns;
     public int rows;
+    public int columns;
 }
 public class DungeonGenerator : MonoBehaviour
 {
@@ -31,12 +27,14 @@ public class DungeonGenerator : MonoBehaviour
     private System.Random random;
     private Graph<RectInt> graph;
     private Dictionary<RectInt, float> costs = new Dictionary<RectInt, float>();
+    private List<RectInt> pathToEnd = new();
     private void GenerateDungeon()
     {
         graph = new Graph<RectInt>();
         if (!useSeed) seed = Environment.TickCount;
         random = new System.Random(seed);
 
+        pathToEnd.Clear();
         costs.Clear();
         cells.Clear();
         GenerateBounds();
@@ -83,7 +81,7 @@ public class DungeonGenerator : MonoBehaviour
         startCell = cells[index];
         cells.RemoveAt(index);
 
-        costs = Dijkstra(startCell);
+        costs = GraphUtils.GetCosts(startCell, graph);
 
         List<RectInt> cellsCopy = cells;
         for(int i = cellsCopy.Count - 1; i >= 0; i--)
@@ -93,56 +91,12 @@ public class DungeonGenerator : MonoBehaviour
 
         index = random.Next(cellsCopy.Count);
         endCell = cells[index];
+
+        float cellWidth = dungeonSize.x / grid.rows;
+        float cellHeight = dungeonSize.y / grid.columns;
+        pathToEnd = GraphUtils.FindPath(startCell, endCell, graph, new Vector2(cellWidth, cellHeight));
     }
-    public Dictionary<RectInt, float> Dijkstra(RectInt start)
-    {
-        HashSet<RectInt> discovered = new HashSet<RectInt>();
-        Dictionary<RectInt, RectInt> nodeParents = new Dictionary<RectInt, RectInt>();
-        Dictionary<RectInt, float> nodeCosts = new Dictionary<RectInt, float>();
-        discovered.Clear();
-
-        nodeCosts.Add(start, 0);
-
-        List<(RectInt node, float priority)> priorityQueue = new List<(RectInt node, float priority)>();
-        priorityQueue.Add((start, 0));
-
-        while (priorityQueue.Count > 0)
-        {
-            RectInt node = priorityQueue[priorityQueue.Count - 1].node;
-            discovered.Add(node);
-            priorityQueue.RemoveAt(priorityQueue.Count - 1);
-
-            //if (node == end) return ReconstructPath(nodeParents, start, end);
-
-            foreach (RectInt neighbor in graph.GetNeighbors(node))
-            {
-                if (nodeParents.ContainsKey(neighbor))
-                {
-                    float currentCost = nodeCosts[neighbor];
-                    float newPossibleCost = nodeCosts[node] + 1;
-
-                    if (newPossibleCost < currentCost)
-                    {
-                        nodeCosts[neighbor] = newPossibleCost;
-                        nodeParents[neighbor] = node;
-                    }
-                }
-
-                else
-                {
-                    if (discovered.Contains(neighbor)) continue;
-
-                    nodeParents.Add(neighbor, node);
-                    nodeCosts.Add(neighbor, nodeCosts[node] + 1);
-                    priorityQueue.Add((neighbor, nodeCosts[neighbor]));
-                }
-            }
-
-            priorityQueue = priorityQueue.OrderByDescending(p => p.priority).ToList();
-        }
-
-        return nodeCosts;
-    }
+    
     List<RectInt> ReconstructPath(Dictionary<RectInt, RectInt> parentMap, RectInt start, RectInt end)
     {
         List<RectInt> path = new List<RectInt>();
@@ -162,8 +116,7 @@ public class DungeonGenerator : MonoBehaviour
     {
         foreach (RectInt cell in costs.Keys)
         {
-            int maxDist = grid.columns - 1 + grid.rows - 1;
-            float value = (1f / maxDist) * costs[cell];
+            float value = costs[cell] >= minPathCost ? 1 : 0;
             Color color = new Color(1-value, value, 0);
             AlgorithmsUtils.DebugRectInt(cell, color);
         }
@@ -173,6 +126,11 @@ public class DungeonGenerator : MonoBehaviour
         AlgorithmsUtils.DebugRectInt(startCell, Color.blue);
 
         AlgorithmsUtils.DebugRectInt(endCell, Color.magenta);
+
+        for(int i = pathToEnd.Count - 1; i > 0; i--)
+        {
+            Debug.DrawLine(pathToEnd[i].center, pathToEnd[i-1].center, Color.yellow);
+        }
     }
     [Button(enabledMode: EButtonEnableMode.Playmode)]
     public void Generate()

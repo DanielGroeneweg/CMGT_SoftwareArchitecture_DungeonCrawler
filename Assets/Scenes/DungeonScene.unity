@@ -412,12 +412,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a979be20b8730cc4eb2500cd57703449, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DungeonGenerator
-  dungeonSize: {x: 100, y: 100}
+  dungeonSize: {x: 10, y: 10}
   grid:
-    columns: 10
     rows: 10
+    columns: 10
   minPathCost: 10
-  useSeed: 1
+  useSeed: 0
   seed: 145125359
 --- !u!4 &571113846
 Transform:
