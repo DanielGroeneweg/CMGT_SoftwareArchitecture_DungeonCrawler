@@ -11,9 +11,11 @@ public class GridLayout
 public class DungeonGenerator : MonoBehaviour
 {
     [Header("Dungeon Stats")]
-    [SerializeField] private Vector2Int dungeonSize;
+    [SerializeField] private int cellSize;
     [SerializeField] private GridLayout grid;
     [SerializeField] private int minPathCost;
+    [SerializeField] private bool excludeVertical;
+    [SerializeField] private bool excludeHorizontal;
     [Header("Randomization")]
     [SerializeField] private bool useSeed = false;
     [ShowIf("useSeed", ComparisonTypes.Equals, true)]
@@ -43,18 +45,16 @@ public class DungeonGenerator : MonoBehaviour
     }
     private void GenerateBounds()
     {
-        bounds = new RectInt(0, 0, dungeonSize.x, dungeonSize.y);
+        bounds = new RectInt(0, 0, cellSize * grid.rows, cellSize * grid.columns);
     }
     private void GenerateCells()
     {
         // Create all Cells
-        int cellWidth = dungeonSize.x / grid.rows;
-        int cellHeight = dungeonSize.y / grid.columns;
         for (int i = 0; i < grid.rows; i++)
         {
             for (int j = 0; j < grid.columns; j++)
             {
-                RectInt cell = new RectInt(cellWidth * i, cellHeight * j, cellWidth, cellHeight);
+                RectInt cell = new RectInt(cellSize * i, cellSize * j, cellSize, cellSize);
                 graph.AddNode(cell);
                 cells.Add(cell);
             }
@@ -67,10 +67,10 @@ public class DungeonGenerator : MonoBehaviour
             for (int j = i + 1; j < cells.Count; j++)
             {
                 RectInt cellB = cells[j];
-                if ((cellB.position.x - cellA.position.x == cellWidth && cellA.position.y == cellB.position.y) || 
-                    (cellB.position.y - cellA.position.y == cellHeight && cellA.position.x == cellB.position.x) ||
-                    (cellA.position.x - cellB.position.x == cellWidth && cellA.position.y == cellB.position.y) ||
-                    (cellA.position.y - cellB.position.y == cellHeight && cellA.position.x == cellB.position.x))
+                if ((cellB.position.x - cellA.position.x == cellSize && cellA.position.y == cellB.position.y) || 
+                    (cellB.position.y - cellA.position.y == cellSize && cellA.position.x == cellB.position.x) ||
+                    (cellA.position.x - cellB.position.x == cellSize && cellA.position.y == cellB.position.y) ||
+                    (cellA.position.y - cellB.position.y == cellSize && cellA.position.x == cellB.position.x))
                     graph.AddNeighbor(cellA, cellB);
             }
         }
@@ -87,14 +87,14 @@ public class DungeonGenerator : MonoBehaviour
         for(int i = cellsCopy.Count - 1; i >= 0; i--)
         {
             if (costs[cellsCopy[i]] < minPathCost) cellsCopy.Remove(cellsCopy[i]);
+            else if (excludeHorizontal && cellsCopy[i].center.y == startCell.center.y) cellsCopy.Remove(cellsCopy[i]);
+            else if (excludeVertical && cellsCopy[i].center.x == startCell.center.x) cellsCopy.Remove(cellsCopy[i]);
         }
 
         index = random.Next(cellsCopy.Count);
         endCell = cells[index];
 
-        float cellWidth = dungeonSize.x / grid.rows;
-        float cellHeight = dungeonSize.y / grid.columns;
-        pathToEnd = GraphUtils.FindPath(startCell, endCell, graph, new Vector2(cellWidth, cellHeight));
+        pathToEnd = GraphUtils.FindPath(startCell, endCell, graph, new Vector2(cellSize, cellSize));
     }
     
     List<RectInt> ReconstructPath(Dictionary<RectInt, RectInt> parentMap, RectInt start, RectInt end)
@@ -118,7 +118,10 @@ public class DungeonGenerator : MonoBehaviour
         {
             float value = costs[cell] >= minPathCost ? 1 : 0;
             Color color = new Color(1-value, value, 0);
-            AlgorithmsUtils.DebugRectInt(cell, color);
+
+            if (excludeHorizontal && cell.center.y == startCell.center.y) AlgorithmsUtils.DebugRectInt(cell, Color.red);
+            else if (excludeVertical && cell.center.x == startCell.center.x) AlgorithmsUtils.DebugRectInt(cell, Color.red);
+            else AlgorithmsUtils.DebugRectInt(cell, color);
         }
 
         AlgorithmsUtils.DebugRectInt(bounds, Color.white);
