@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using NaughtyAttributes;
+using NUnit.Framework.Interfaces;
 [Serializable]
 public class GridLayout
 {
@@ -16,6 +17,7 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private int minPathCost;
     [SerializeField] private bool excludeVertical;
     [SerializeField] private bool excludeHorizontal;
+
     [Header("Randomization")]
     [SerializeField] private bool useSeed = false;
     [ShowIf("useSeed", ComparisonTypes.Equals, true)]
@@ -45,7 +47,7 @@ public class DungeonGenerator : MonoBehaviour
     }
     private void GenerateBounds()
     {
-        bounds = new RectInt(0, 0, cellSize, cellSize);
+        bounds = new RectInt(0, 0, cellSize * grid.rows, cellSize * grid.columns);
     }
     private void GenerateCells()
     {
@@ -57,6 +59,7 @@ public class DungeonGenerator : MonoBehaviour
                 RectInt cell = new RectInt(cellSize * i, cellSize * j, cellSize, cellSize);
                 graph.AddNode(cell);
                 cells.Add(cell);
+                costs.Add(cell, -1);
             }
         }
 
@@ -119,7 +122,8 @@ public class DungeonGenerator : MonoBehaviour
             float value = costs[cell] >= minPathCost ? 1 : 0;
             Color color = new Color(1-value, value, 0);
 
-            if (excludeHorizontal && cell.center.y == startCell.center.y) AlgorithmsUtils.DebugRectInt(cell, Color.red);
+            if (costs[cell] == -1) AlgorithmsUtils.DebugRectInt(cell, Color.yellow);
+            else if (excludeHorizontal && cell.center.y == startCell.center.y) AlgorithmsUtils.DebugRectInt(cell, Color.red);
             else if (excludeVertical && cell.center.x == startCell.center.x) AlgorithmsUtils.DebugRectInt(cell, Color.red);
             else AlgorithmsUtils.DebugRectInt(cell, color);
         }
