@@ -45,7 +45,7 @@ public class DungeonGenerator : MonoBehaviour
     }
     private void GenerateBounds()
     {
-        bounds = new RectInt(0, 0, cellSize * grid.rows, cellSize * grid.columns);
+        bounds = new RectInt(0, 0, cellSize, cellSize);
     }
     private void GenerateCells()
     {
@@ -94,7 +94,7 @@ public class DungeonGenerator : MonoBehaviour
         index = random.Next(cellsCopy.Count);
         endCell = cells[index];
 
-        pathToEnd = GraphUtils.FindPath(startCell, endCell, graph, new Vector2(cellSize, cellSize));
+        pathToEnd = GraphUtils.FindPath(startCell, endCell, graph, cellSize);
     }
     
     List<RectInt> ReconstructPath(Dictionary<RectInt, RectInt> parentMap, RectInt start, RectInt end)

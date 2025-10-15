@@ -63,7 +63,7 @@ public static class GraphUtils
     /// <param name="graph"></param>
     /// <param name="cellSize"></param>
     /// <returns></returns>
-    public static List<RectInt> FindPath(RectInt start, RectInt end, Graph<RectInt> graph, Vector2 cellSize)
+    public static List<RectInt> FindPath(RectInt start, RectInt end, Graph<RectInt> graph, int cellSize)
     {
         HashSet<RectInt> discovered = new HashSet<RectInt>();
         Dictionary<RectInt, RectInt> nodeParents = new Dictionary<RectInt, RectInt>();
@@ -112,7 +112,7 @@ public static class GraphUtils
 
         return new List<RectInt>();
     }
-    private static float Heuristic(RectInt from, RectInt to, Vector2 cellSize)
+    private static float Heuristic(RectInt from, RectInt to, int cellSize)
     {
         return Vector2.Distance(from.center / cellSize, to.center / cellSize);
     }

@@ -414,11 +414,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DungeonGenerator
   cellSize: 1
   grid:
-    rows: 10
-    columns: 10
-  minPathCost: 10
-  excludeVertical: 1
-  excludeHorizontal: 1
+    rows: 7
+    columns: 7
+  minPathCost: 6
   useSeed: 0
   seed: 145125359
 --- !u!4 &571113846
