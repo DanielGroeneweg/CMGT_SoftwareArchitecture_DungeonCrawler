@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace CMGTSA.Attack
+namespace CMGTSA.Enemy
 {
     public abstract class AttackBehaviour : MonoBehaviour
     {

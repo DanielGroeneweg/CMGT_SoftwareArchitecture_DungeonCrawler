@@ -62,7 +62,8 @@ namespace CMGTSA
                 isIdling = false;
                 isRunning = false;
                 isJumping = true;
-                rb.AddForceY(jumpForce, ForceMode2D.Force);
+                rb.AddForceY(jumpForce, ForceMode2D.Impulse);
+                SetAnimation(Animations.Jumping);
             }
         }
         private void Attacking()
@@ -74,13 +75,15 @@ namespace CMGTSA
                 isAttacking = true;
                 SetAnimation(Animations.Attack);
                 StartCoroutine(DisableBool(nameof(isAttacking), false, attackDuration));
+                Debug.Log("attacking");
             }
         }
         private void Movement()
         {
-            if (!grounded || isAttacking || isJumping) return;
-
             bool isMoving = move != Vector2.zero;
+            if (isMoving && !isAttacking) sprite.flipX = move.x < 0;
+
+            if (!grounded || isAttacking || isJumping) return;
 
             if (isMoving)
             {
@@ -157,6 +160,7 @@ namespace CMGTSA
         public void OnAttack(InputValue _Input)
         {
             pressedAttack = true;
+            Debug.Log("click");
         }
         private void ResetInput()
         {
