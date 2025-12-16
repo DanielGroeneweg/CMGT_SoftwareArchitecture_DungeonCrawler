@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36decdc786747e842b440f7b250cddab, type: 3}
+  m_Name: BigHPPotion
+  m_EditorClassIdentifier: Assembly-CSharp::Potion
+  itemName: Big Health Potion
+  icon: {fileID: -54924648, guid: 550595c867a25f44db6ddc97b59cea16, type: 3}
+  itemID: ced678cb-2fdb-4e8d-90e0-7af0608c16c1
+  type: 0
+  regenAmount: 50
